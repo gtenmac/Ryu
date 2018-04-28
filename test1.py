@@ -52,7 +52,7 @@ class Test(app_manager.RyuApp):
         self.mac_to_port.setdefault(dpid, {})
         self.mac_to_port[dpid][src] = in_port
         print(self.mac_to_port,self.mac_to_port[dpid],dst,src)
-        if dst in self.mac_to_port:
+        if dst in self.mac_to_port[dpid]:
             print('had')
             out_port = self.mac_to_port[dpid][dst]
         else:
