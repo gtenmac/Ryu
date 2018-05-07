@@ -4,7 +4,7 @@ from ryu.controller.handler import CONFIG_DISPATCHER,MAIN_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_3
 from ryu.lib.packet import packet
-from ryu.lib.packet import ethernet
+from ryu.lib.packet import ethernet,mpls
 
 class SimpleSwitch13(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
@@ -43,8 +43,10 @@ class SimpleSwitch13(app_manager.RyuApp):
 
         in_port = msg.match['in_port']
         pkt = packet.Packet(msg.data)
+        print(pkt)
         eth = pkt.get_protocols(ethernet.ethernet)[0]
-
+        # _mpls = pkt.get_protocols(mpls.mpls)
+        # print(_mpls)
         dst = eth.dst
         src = eth.src
 
@@ -55,15 +57,15 @@ class SimpleSwitch13(app_manager.RyuApp):
 
         #learn a mac address to avoid FLOOD next time.
         self.mac_to_port[dpid][src] = in_port
-        print(self.mac_to_port[dpid],dst)
+        # print(self.mac_to_port[dpid],dst)
 
-        if dst in self.mac_to_port[dpid]:
-            print('had')
-            out_port = self.mac_to_port[dpid][dst]
-        else:
-            print('flood')
-            out_port = ofproto.OFPP_FLOOD
-
+        # if dst in self.mac_to_port[dpid]:
+        #     print('had')
+        #     out_port = self.mac_to_port[dpid][dst]
+        # else:
+        #     print('flood')
+        #     out_port = ofproto.OFPP_FLOOD
+        out_port = ofproto.OFPP_FLOOD
         actions = [parser.OFPActionOutput(out_port)]
 
         #install a flow to avoid packet_in next time
